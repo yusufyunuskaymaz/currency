@@ -46,11 +46,11 @@ const CurrencyTable = () => {
   };
 
   useEffect(() => {
-    const interval = setInterval(fetchData, 60000); 
+    const interval = setInterval(fetchData, 30000);
 
-    return () => {
-      clearInterval(interval);
-    };
+    // return () => {
+    //   clearInterval(interval);
+    // };
   }, []);
 
   useEffect(() => {
@@ -68,16 +68,15 @@ const CurrencyTable = () => {
       prevValuesCopy[currency.code] = currency.value;
     });
     setPrevValues(prevValuesCopy);
-  }, [currencyList]);
+  }, [data]);
 
   console.log(data, "dattaa");
   console.log(requestCurrency, "res");
-  console.log(prevValues, "a");
-  console.log("render-------------------------");
+  console.log(prevValues, "prevValues");
 
   return (
     <>
-      <h2>{data ? data.results[`${requestCurrency}`] : ""}</h2>
+      <h2>{`1 ${requestCurrency.toUpperCase()}`}</h2>
       <div className="buttons">
         {currencies.map((item, index) => {
           return (
@@ -112,11 +111,17 @@ const CurrencyTable = () => {
                 <td>{item.date.split(" ")[0]}</td>
                 <td
                   className={
-                    prevValues[item.code] > item.value ? "decrease" : "increase"
+                    prevValues[item.code] > item.value
+                      ? "decrease"
+                      : prevValues[item.code] < item.value
+                      ? "increase"
+                      : "same"
                   }
                 >
+                
                   {item.value}
                 </td>
+                Önceki : {prevValues[item.code]}Sonraki: {item.value}
               </tr>
             );
           })}
