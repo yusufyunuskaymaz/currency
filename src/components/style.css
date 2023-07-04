@@ -19,3 +19,10 @@ table {
   tr:nth-child(even) {
     background-color: #dddddd;
   }
+
+  .decrease{
+    background-color: red;
+  }
+  .increase{
+    background-color: green;
+  }

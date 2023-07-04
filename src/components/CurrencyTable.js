@@ -5,7 +5,8 @@ import "./style.css";
 const CurrencyTable = () => {
   const [data, setData] = useState("");
   const [currencyList, setCurrencyList] = useState([]);
-  const [requestCurrency, setRequestCurrency] = useState("");
+  const [requestCurrency, setRequestCurrency] = useState("USD");
+  const [prevValues, setPrevValues] = useState({});
 
   const currencyName = {
     TRY: "Türk Lirası",
@@ -16,8 +17,8 @@ const CurrencyTable = () => {
     CNY: "Chinese Yuan",
   };
 
-
   // Create array for mapping at table
+  const currencies = ["TRY", "USD", "EUR", "JPY", "GBP", "CNY"];
   const createCurrencyList = () => {
     if (data && data.results) {
       const currencyObjects = Object.keys(data.results).map((currencyCode) => ({
@@ -26,12 +27,10 @@ const CurrencyTable = () => {
         date: data.updated,
         value: data.results[currencyCode],
       }));
-      console.log(currencyObjects, "listt");
       setCurrencyList(currencyObjects);
     }
   };
 
-  const currencies = ["TRY", "USD", "EUR", "JPY", "GBP", "CNY"];
   const fetchData = async () => {
     const API_KEY = "a57a516e32-808737b59c-rx7xum";
     const toCurrencies = currencies.join(",");
@@ -47,26 +46,52 @@ const CurrencyTable = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    const interval = setInterval(fetchData, 60000); 
+
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [requestCurrency]);
 
   useEffect(() => {
     createCurrencyList();
   }, [data]);
 
+  useEffect(() => {
+    // Keeping prev values
+    const prevValuesCopy = {};
+    currencyList.forEach((currency) => {
+      prevValuesCopy[currency.code] = currency.value;
+    });
+    setPrevValues(prevValuesCopy);
+  }, [currencyList]);
+
   console.log(data, "dattaa");
-  console.log(requestCurrency,"res")
+  console.log(requestCurrency, "res");
+  console.log(prevValues, "a");
+  console.log("render-------------------------");
 
   return (
     <>
-      <h2>{data ? data?.results[`${requestCurrency}`] : ""}</h2>
+      <h2>{data ? data.results[`${requestCurrency}`] : ""}</h2>
       <div className="buttons">
         {currencies.map((item, index) => {
-          return <button key={index + 1}
-          onClick={()=>setRequestCurrency(item.toLowerCase())}
-          >{item}</button>;
+          return (
+            <button
+              key={index + 1}
+              onClick={() => setRequestCurrency(item.toLowerCase())}
+            >
+              {item}
+            </button>
+          );
         })}
       </div>
+      <br />
+      <br />
       <table>
         <thead>
           <tr>
@@ -77,13 +102,21 @@ const CurrencyTable = () => {
           </tr>
         </thead>
         <tbody>
-          {currencyList.map((item,index) => {
+          {currencyList.map((item, index) => {
             return (
-              <tr key={index+1}>
-                <td>{item.code}</td>
+              <tr key={index + 1}>
+                <td style={{ fontWeight: "bold" }}>
+                  {item.code.toLowerCase()}
+                </td>
                 <td>{item.name}</td>
-                <td>{item.date}</td>
-                <td>{item.value}</td>
+                <td>{item.date.split(" ")[0]}</td>
+                <td
+                  className={
+                    prevValues[item.code] > item.value ? "decrease" : "increase"
+                  }
+                >
+                  {item.value}
+                </td>
               </tr>
             );
           })}
