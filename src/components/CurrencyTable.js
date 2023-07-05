@@ -7,6 +7,7 @@ const CurrencyTable = () => {
   const [currencyList, setCurrencyList] = useState([]);
   const [requestCurrency, setRequestCurrency] = useState("USD");
   const [prevValues, setPrevValues] = useState({});
+  const [classFlag, setClassFlag] = useState(true);
 
   const currencyName = {
     TRY: "Türk Lirası",
@@ -20,7 +21,7 @@ const CurrencyTable = () => {
   // Create array for mapping at table
   const currencies = ["TRY", "USD", "EUR", "JPY", "GBP", "CNY"];
   const createCurrencyList = () => {
-    if (data && data.results) {
+    if (data) {
       const currencyObjects = Object.keys(data.results).map((currencyCode) => ({
         code: currencyCode,
         name: currencyName[currencyCode],
@@ -39,19 +40,18 @@ const CurrencyTable = () => {
     try {
       const response = await axios.get(API_URL);
       setData(response.data);
-      createCurrencyList();
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-    const interval = setInterval(fetchData, 30000);
+    const interval = setInterval(fetchData, 3000);
 
-    // return () => {
-    //   clearInterval(interval);
-    // };
-  }, []);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [requestCurrency]);
 
   useEffect(() => {
     fetchData();
@@ -63,31 +63,39 @@ const CurrencyTable = () => {
 
   useEffect(() => {
     // Keeping prev values
-    const prevValuesCopy = {};
-    currencyList.forEach((currency) => {
-      prevValuesCopy[currency.code] = currency.value;
-    });
-    setPrevValues(prevValuesCopy);
+    if (classFlag) {
+      const prevValuesCopy = {};
+      currencyList.forEach((currency) => {
+        console.log(currencyList, "aaaaaa++++++++++");
+        prevValuesCopy[currency.code] = currency.value;
+      });
+      setPrevValues(prevValuesCopy);
+    }
+    setClassFlag(true);
   }, [data]);
 
   console.log(data, "dattaa");
   console.log(requestCurrency, "res");
   console.log(prevValues, "prevValues");
 
+  const onClickHandle = (item) => {
+    setRequestCurrency(item.toLowerCase());
+    setClassFlag(false);
+    setPrevValues({});
+  };
   return (
     <>
-      <h2>{`1 ${requestCurrency.toUpperCase()}`}</h2>
       <div className="buttons">
-        {currencies.map((item, index) => {
-          return (
-            <button
-              key={index + 1}
-              onClick={() => setRequestCurrency(item.toLowerCase())}
-            >
-              {item}
-            </button>
-          );
-        })}
+        <h2>{`1 ${requestCurrency.toUpperCase()}`}</h2>
+        <div className="buttons">
+          {currencies.map((item, index) => {
+            return (
+              <button key={index + 1} onClick={() => onClickHandle(item)}>
+                {item}
+              </button>
+            );
+          })}
+        </div>
       </div>
       <br />
       <br />
@@ -101,30 +109,35 @@ const CurrencyTable = () => {
           </tr>
         </thead>
         <tbody>
-          {currencyList.map((item, index) => {
-            return (
-              <tr key={index + 1}>
-                <td style={{ fontWeight: "bold" }}>
-                  {item.code.toLowerCase()}
-                </td>
-                <td>{item.name}</td>
-                <td>{item.date.split(" ")[0]}</td>
-                <td
-                  className={
-                    prevValues[item.code] > item.value
-                      ? "decrease"
-                      : prevValues[item.code] < item.value
-                      ? "increase"
-                      : "same"
-                  }
-                >
-                
-                  {item.value}
-                </td>
-                Önceki : {prevValues[item.code]}Sonraki: {item.value}
-              </tr>
-            );
-          })}
+          {currencyList
+            .filter((item) => {
+              return item.code.toLowerCase() !== requestCurrency.toLowerCase();
+            })
+            .map((item, index) => {
+              return (
+                <tr key={index + 1}>
+                  <td style={{ fontWeight: "bold" }}>
+                    {item.code.toLowerCase()}
+                  </td>
+                  <td>{item.name}</td>
+                  <td>{item.date.split(" ")[0]}</td>
+                  <td
+                    className={
+                      classFlag
+                        ? prevValues[item.code] > item.value
+                          ? "decrease"
+                          : prevValues[item.code] < item.value
+                          ? "increase"
+                          : "same"
+                        : ""
+                    }
+                  >
+                    {item.value}
+                  </td>
+                  Önceki : {prevValues[item.code]}Sonraki: {item.value}
+                </tr>
+              );
+            })}
         </tbody>
       </table>
     </>
