@@ -88,13 +88,17 @@ const CurrencyTable = () => {
       <div className="buttons">
         <h2>{`1 ${requestCurrency.toUpperCase()}`}</h2>
         <div className="buttons">
-          {currencies.map((item, index) => {
-            return (
-              <button key={index + 1} onClick={() => onClickHandle(item)}>
-                {item}
-              </button>
-            );
-          })}
+          {currencies
+            .filter((item) => {
+              return item.toLowerCase() !== requestCurrency.toLowerCase();
+            })
+            .map((item, index) => {
+              return (
+                <button key={index + 1} onClick={() => onClickHandle(item)}>
+                  {item}
+                </button>
+              );
+            })}
         </div>
       </div>
       <br />
