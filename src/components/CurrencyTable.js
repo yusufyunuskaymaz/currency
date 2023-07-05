@@ -85,7 +85,7 @@ const CurrencyTable = () => {
   };
   return (
     <>
-      <div className="buttons">
+      <div className="container">
         <h2>{`1 ${requestCurrency.toUpperCase()}`}</h2>
         <div className="buttons">
           {currencies
@@ -120,7 +120,7 @@ const CurrencyTable = () => {
             .map((item, index) => {
               return (
                 <tr key={index + 1}>
-                  <td style={{ fontWeight: "bold" }}>
+                  <td className="currencyCode">
                     {item.code.toLowerCase()}
                   </td>
                   <td>{item.name}</td>
@@ -135,10 +135,11 @@ const CurrencyTable = () => {
                           : "same"
                         : ""
                     }
+                    id="currencyValue"
                   >
-                    {item.value}
+                    {item.value.toFixed(2)}
                   </td>
-                  Önceki : {prevValues[item.code]}Sonraki: {item.value}
+                  {/* {prevValues[item.code]} {item.value} */}
                 </tr>
               );
             })}
