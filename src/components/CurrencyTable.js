@@ -59,7 +59,7 @@ const CurrencyTable = () => {
   };
 
   useEffect(() => {
-    const interval = setInterval(fetchData, 3000);
+    const interval = setInterval(fetchData, 60000);
 
     return () => {
       clearInterval(interval);
@@ -86,7 +86,8 @@ const CurrencyTable = () => {
     setPrevValues({});
   };
   return (
-    <>
+    <div className="main">
+    <h1>Currency App</h1>
       <ButtonGroup
         requestCurrency={requestCurrency}
         onClickHandle={onClickHandle}
@@ -131,7 +132,7 @@ const CurrencyTable = () => {
           )}
         </tbody>
       </table>
-    </>
+    </div>
   );
 };
 
