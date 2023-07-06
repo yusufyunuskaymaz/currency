@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import "./style.css";
+import ButtonGroup from "./ButtonGroup";
 
 const CurrencyTable = () => {
   const [data, setData] = useState("");
@@ -8,6 +9,10 @@ const CurrencyTable = () => {
   const [requestCurrency, setRequestCurrency] = useState("USD");
   const [prevValues, setPrevValues] = useState({});
   const [classFlag, setClassFlag] = useState(true);
+
+  useEffect(() => {
+    fetchData();
+  }, [requestCurrency]);
 
   const currencyName = {
     TRY: "Türk Lirası",
@@ -20,6 +25,14 @@ const CurrencyTable = () => {
 
   // Create array for mapping at table
   const currencies = ["TRY", "USD", "EUR", "JPY", "GBP", "CNY"];
+  const symbols = {
+    TRY: "₺",
+    USD: "$",
+    GBP: "£",
+    EUR: "€",
+    JPY: "¥",
+    CNY: "¥",
+  };
   const createCurrencyList = () => {
     if (data) {
       const currencyObjects = Object.keys(data.results).map((currencyCode) => ({
@@ -53,30 +66,22 @@ const CurrencyTable = () => {
     };
   }, [requestCurrency]);
 
-  useEffect(() => {
-    fetchData();
-  }, [requestCurrency]);
 
-  useEffect(() => {
-    createCurrencyList();
-  }, [data]);
 
   useEffect(() => {
     // Keeping prev values
     if (classFlag) {
       const prevValuesCopy = {};
       currencyList.forEach((currency) => {
-        console.log(currencyList, "aaaaaa++++++++++");
         prevValuesCopy[currency.code] = currency.value;
       });
       setPrevValues(prevValuesCopy);
     }
     setClassFlag(true);
-  }, [data]);
 
-  console.log(data, "dattaa");
-  console.log(requestCurrency, "res");
-  console.log(prevValues, "prevValues");
+    createCurrencyList();
+
+  }, [data]);
 
   const onClickHandle = (item) => {
     setRequestCurrency(item.toLowerCase());
@@ -85,22 +90,11 @@ const CurrencyTable = () => {
   };
   return (
     <>
-      <div className="container">
-        <h2>{`1 ${requestCurrency.toUpperCase()}`}</h2>
-        <div className="buttons">
-          {currencies
-            .filter((item) => {
-              return item.toLowerCase() !== requestCurrency.toLowerCase();
-            })
-            .map((item, index) => {
-              return (
-                <button key={index + 1} onClick={() => onClickHandle(item)}>
-                  {item}
-                </button>
-              );
-            })}
-        </div>
-      </div>
+      <ButtonGroup
+        requestCurrency={requestCurrency}
+        onClickHandle={onClickHandle}
+        currencies={currencies}
+      />
       <br />
       <br />
       <table>
@@ -113,16 +107,11 @@ const CurrencyTable = () => {
           </tr>
         </thead>
         <tbody>
-          {currencyList
-            .filter((item) => {
-              return item.code.toLowerCase() !== requestCurrency.toLowerCase();
-            })
-            .map((item, index) => {
-              return (
+          {currencyList.map(
+            (item, index) =>
+              item.code.toLowerCase() !== requestCurrency.toLowerCase() && (
                 <tr key={index + 1}>
-                  <td className="currencyCode">
-                    {item.code.toLowerCase()}
-                  </td>
+                  <td className="currencyCode">{item.code.toLowerCase()}</td>
                   <td>{item.name}</td>
                   <td>{item.date.split(" ")[0]}</td>
                   <td
@@ -137,12 +126,14 @@ const CurrencyTable = () => {
                     }
                     id="currencyValue"
                   >
+                    <span className="currencySymbol">
+                      {symbols[item.code]}
+                    </span>{" "}
                     {item.value.toFixed(2)}
                   </td>
-                  {/* {prevValues[item.code]} {item.value} */}
                 </tr>
-              );
-            })}
+              )
+          )}
         </tbody>
       </table>
     </>

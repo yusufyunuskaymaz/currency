@@ -48,6 +48,10 @@ table {
     font-size: 1.5rem;
   }
 
+  .currencySymbol{
+    font-size: 1.3rem;
+  }
+
   .decrease{
     background-color: #f3c4c5;
     color: #fb3535;
