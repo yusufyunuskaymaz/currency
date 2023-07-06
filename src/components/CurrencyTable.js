@@ -66,8 +66,6 @@ const CurrencyTable = () => {
     };
   }, [requestCurrency]);
 
-
-
   useEffect(() => {
     // Keeping prev values
     if (classFlag) {
@@ -80,7 +78,6 @@ const CurrencyTable = () => {
     setClassFlag(true);
 
     createCurrencyList();
-
   }, [data]);
 
   const onClickHandle = (item) => {
@@ -126,9 +123,7 @@ const CurrencyTable = () => {
                     }
                     id="currencyValue"
                   >
-                    <span className="currencySymbol">
-                      {symbols[item.code]}
-                    </span>{" "}
+                    <span className="currencySymbol">{symbols[item.code]}</span>{" "}
                     {item.value.toFixed(2)}
                   </td>
                 </tr>
