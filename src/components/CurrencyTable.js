@@ -46,7 +46,7 @@ const CurrencyTable = () => {
   };
 
   const fetchData = async () => {
-    const API_KEY = "a57a516e32-808737b59c-rx7xum";
+    const API_KEY = "8f005c2b37-0967ad70cf-rxmta8";
     const toCurrencies = currencies.join(",");
     const API_URL = `https://api.fastforex.io/fetch-multi?from=${requestCurrency}&to=${toCurrencies}&api_key=${API_KEY}`;
 
